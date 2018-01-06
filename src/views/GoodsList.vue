@@ -52,18 +52,10 @@
             <div class="filter stopPop" id="filter">
               <dl class="filter-price">
                 <dt>Price:</dt>
-                <dd><a href="javascript:void(0)">All</a></dd>
-                <dd>
-                  <a href="javascript:void(0)">0 - 100</a>
-                </dd>
-                <dd>
-                  <a href="javascript:void(0)">100 - 500</a>
-                </dd>
-                <dd>
-                  <a href="javascript:void(0)">500 - 1000</a>
-                </dd>
-                <dd>
-                  <a href="javascript:void(0)">1000 - 2000</a>
+                <dd><a href="javascript:void(0)" v-bind:class="{'cur':priceChecked=='all'}" @click="setPriceFilter('all')">All</a></dd>
+                <dd v-for="(item,index) in priceFilter">
+                  <a href="javascript:void(0)"  v-bind:class="{'cur':priceChecked==index}" @click="setPriceFilter(index)">{{item.priceDown}} - {{item.priceUp}}
+                  </a>
                 </dd>
               </dl>
             </div>
@@ -74,7 +66,7 @@
                 <ul>
                   <li v-for="item in rooms">
                     <div class="pic">
-                      <a href="#"><img src="static/1.jpg" alt=""></a>
+                      <a href="#"><img v-lazy="static/Ripple.svg" alt=""></a>
                     </div>
                     <div class="main">
                       <div class="name">{{item.roomNum}}</div>
@@ -124,7 +116,33 @@
   export default{
     data(){
       return {
-        rooms:[]
+        rooms:[],
+        page:1,
+        pageSize:8,
+        priceChecked:"all",
+        sortFlag:1,
+        priceAll:{
+          priceDown:0,
+          priceUp:1000000
+        },
+        priceFilter:[
+          {
+            priceDown:0,
+            priceUp:200
+          },
+          {
+            priceDown:200,
+            priceUp:500
+          },
+          {
+            priceDown:500,
+            priceUp:800
+          },
+          {
+            priceDown:800,
+            priceUp:1000
+          },
+        ]
       }
     },
     mounted(){
@@ -132,16 +150,29 @@
     },
     methods:{
       getRoomData(){
+        let priceLevel;
+        if (this.priceChecked=="all"){
+          priceLevel=this.priceAll;
+        }
+        else{
+          priceLevel=this.priceFilter[this.priceChecked]
+        }
         var params={
-          page:2,
-          pageSize:3,
-          priceUp:600,
-          priceDown:200
+          page:this.page,
+          pageSize:this.pageSize,
+          priceUp:priceLevel.priceUp,
+          priceDown:priceLevel.priceDown,
+          sortFlag:this.sortFlag
         };
         axios.get("getData/room",{params:params}).then(res=>{
           this.rooms=res.data.room;
         }).catch()
       },
+      setPriceFilter(index){
+        this.priceChecked=index;
+        this.page=1;
+        this.getRoomData();
+      }
     }
   }
   </script>
