@@ -44,7 +44,7 @@
           <div class="filter-nav">
             <span class="sortby">Sort by:</span>
             <a href="javascript:void(0)" class="default cur">Default</a>
-            <a href="javascript:void(0)" class="price">Price <svg class="icon icon-arrow-short"><use xlink:href="#icon-arrow-short"></use></svg></a>
+            <a href="javascript:void(0)" class="price" @click="sortfun">Price <svg class="icon icon-arrow-short"><use xlink:href="#icon-arrow-short"></use></svg></a>
             <a href="javascript:void(0)" class="filterby stopPop">Filter by</a>
           </div>
           <div class="accessory-result">
@@ -60,13 +60,14 @@
               </dl>
             </div>
 
+
             <!-- search result accessories list -->
             <div class="accessory-list-wrap">
               <div class="accessory-list col-4">
                 <ul>
                   <li v-for="item in rooms">
                     <div class="pic">
-                      <a href="#"><img v-lazy="static/Ripple.svg" alt=""></a>
+                      <a href="#"><img v-lazy="'static/'+'rose.png'" alt=""></a>
                     </div>
                     <div class="main">
                       <div class="name">{{item.roomNum}}</div>
@@ -77,8 +78,11 @@
                     </div>
                   </li>
                 </ul>
+                <div v-infinite-scroll="loadMore" infinite-scroll-disabled="busy" infinite-scroll-distance="10" class="load-more" ><img class="imgload" src="/static/Ripple.svg" v-if="waitting">
+                </div>
               </div>
             </div>
+
           </div>
         </div>
       </div>
@@ -112,45 +116,61 @@
       </footer>
     </div>
   </template>
+  <style type="text/css">
+  .load-more{
+    height: 100px;
+    width: 100px;
+    text-align: center;
+    display: block;
+    margin:0 auto;
+  }
+  .imgload{
+    max-width: 100%;
+    max-height: 100%;
+  }
+  </style>
   <script>
   export default{
     data(){
       return {
         rooms:[],
         page:1,
-        pageSize:8,
+        pageSize:4,
         priceChecked:"all",
-        sortFlag:1,
+        sortFlag:true,
+        waitting:false,
+        busy:true,
         priceAll:{
           priceDown:0,
           priceUp:1000000
         },
         priceFilter:[
-          {
-            priceDown:0,
-            priceUp:200
-          },
-          {
-            priceDown:200,
-            priceUp:500
-          },
-          {
-            priceDown:500,
-            priceUp:800
-          },
-          {
-            priceDown:800,
-            priceUp:1000
-          },
+        {
+          priceDown:0,
+          priceUp:200
+        },
+        {
+          priceDown:200,
+          priceUp:500
+        },
+        {
+          priceDown:500,
+          priceUp:800
+        },
+        {
+          priceDown:800,
+          priceUp:1000
+        },
         ]
       }
     },
     mounted(){
-        this.getRoomData();
+      this.getRoomData();
     },
     methods:{
-      getRoomData(){
+      getRoomData(flag){
         let priceLevel;
+        this.waitting=true;
         if (this.priceChecked=="all"){
           priceLevel=this.priceAll;
         }
@@ -165,11 +185,38 @@
           sortFlag:this.sortFlag
         };
         axios.get("getData/room",{params:params}).then(res=>{
-          this.rooms=res.data.room;
+          let result=res.data.room;
+          this.waitting=false;
+          if(flag){
+            if(result.length==0){
+              this.busy=true;
+            }
+            else{
+              this.busy=false;
+              this.rooms=[...this.rooms,...result];
+            }
+          }
+          else{
+            this.rooms=result;
+            this.busy=false;
+          }
+          
         }).catch()
       },
       setPriceFilter(index){
         this.priceChecked=index;
+        this.page=1;
+        this.getRoomData();
+      },
+      loadMore(){
+        this.busy = true;
+        setTimeout(() => {
+          this.page+=1;
+          this.getRoomData(true);
+        }, 500);
+      },
+      sortfun(){
+        this.sortFlag=!this.sortFlag;
         this.page=1;
         this.getRoomData();
       }
