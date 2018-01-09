@@ -67,13 +67,13 @@
                 <ul>
                   <li v-for="item in rooms">
                     <div class="pic">
-                      <a href="#"><img v-lazy="'static/'+'rose.png'" alt=""></a>
+                      <img v-lazy="'static/'+item.roomNum+'.jpg'" alt=""></a>
                     </div>
                     <div class="main">
-                      <div class="name">{{item.roomNum}}</div>
-                      <div class="price">{{item.roomPrice}}</div>
+                      <div class="name">房号：{{item.roomNum}}</div>
+                      <span class="price">￥{{item.roomPrice}}</span>
                       <div class="btn-area">
-                        <a href="javascript:;" class="btn btn--m">加入购物车</a>
+                        <a href="javascript:;" class="btn btn--m">入住</a>
                       </div>
                     </div>
                   </li>

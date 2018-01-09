@@ -50,6 +50,8 @@
 }
 
 .accessory-list .pic {
+  width:235px;
+  height: 150px;
   overflow: hidden;
 }
 
@@ -62,6 +64,7 @@
 
 .accessory-list .pic img {
   width: 100%;
+  height: 100%;
 }
 
 .accessory-list .main {
@@ -69,16 +72,15 @@
 }
 
 .accessory-list .main .name {
-  height: 4em;
-  line-height: 1.25em;
-  padding-bottom: 10px;
+  line-height: 30px;
   font-family: "moderat", sans-serif;
-  font-weight: bold;
+  font-size: 1.25em;
   overflow: hidden;
+  float: left;
 }
 
 .accessory-list .main .price {
-  float: left;
+  float: right;
   line-height: 30px;
   color: #d1434a;
   font-size: 1.25em;
