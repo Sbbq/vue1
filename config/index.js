@@ -16,6 +16,12 @@ module.exports = {
             pathRewrite: {
                 '^/getData': ''
             }
+        },
+        '/getUser':{
+            target:"http://10.98.20.9:3000",
+            pathRewrite: {
+                '^/getUser': ''
+            }
         }
     },
 
