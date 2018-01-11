@@ -1,15 +1,15 @@
 <template>
   <div>
     <nav-header></nav-header>
-      <nav-bread>
-        <span>Rooms</span>
-      </nav-bread>
+    <nav-bread>
+      <span>Rooms</span>
+    </nav-bread>
     <div class="accessory-result-page accessory-page">
       <div class="container">
         <div class="filter-nav">
           <span class="sortby">Sort by:</span>
           <a href="javascript:void(0)" class="default cur">Default</a>
-          <a href="javascript:void(0)" class="price" @click="sortfun">Price <svg class="icon icon-arrow-short"><use xlink:href="#icon-arrow-short"></use></svg></a>
+          <a href="javascript:void(0)" class="price" @click="sortfun">Price <svg class="icon icon-arrow-short" v-bind:class="{'arrowRollUp':!sortFlag}" ><use xlink:href="#icon-arrow-short"></use></svg></a>
           <a href="javascript:void(0)" class="filterby stopPop">Filter by</a>
         </div>
         <div class="accessory-result">
@@ -38,7 +38,7 @@
                     <div class="name">房号：{{item.roomNum}}</div>
                     <span class="price">￥{{item.roomPrice}}</span>
                     <div class="btn-area">
-                      <a href="javascript:;" class="btn btn--m">入住</a>
+                      <a href="javascript:;" class="btn btn--m" @click="getIn">入住</a>
                     </div>
                   </div>
                 </li>
@@ -51,6 +51,23 @@
         </div>
       </div>
     </div>
+    <modal v-bind:mdShow="mdShow" v-on:close="closeModal">
+      <p slot="message">
+        请先登录,否则无法入住！
+      </p>
+      <div slot="btnGroup">
+        <a class="btn btn--m" href="javascript:;" @click="mdShow = false">关闭</a>
+      </div>
+    </modal>
+    <modal v-bind:mdShow="mdInShow" v-on:close="closeModal">
+      <p slot="message">
+        入住成功！
+      </p>
+      <div slot="btnGroup">
+        <a class="btn btn--m" href="javascript:;" @click="mdInShow = false">继续入住</a>
+        <router-link class="btn btn--m btn--red" href="javascript:;" to="/Cart">查看房间</router-link>
+      </div>
+    </modal>
     <footer class="footer">
       <div class="footer__wrap">
         <div class="footer__secondary">
@@ -93,10 +110,15 @@
   max-width: 100%;
   max-height: 100%;
 }
+.arrowRollUp{
+  transform: rotate(180deg);
+  transition: all .3s ease-out;
+}
 </style>
 <script>
 import NavHeader from './../components/NavHeader'
 import NavBread from './../components/NavBread'
+import Modal from './../components/Modal'
 export default{
   data(){
     return {
@@ -107,6 +129,8 @@ export default{
       sortFlag:true,
       waitting:false,
       busy:true,
+      mdShow:false,
+      mdInShow:false,
       priceAll:{
         priceDown:0,
         priceUp:1000000
@@ -136,8 +160,8 @@ export default{
   },
   components:{
     NavHeader,
-    NavBread
-
+    NavBread,
+    Modal
   },
   methods:{
     getRoomData(flag){
@@ -166,7 +190,7 @@ export default{
           else{
             this.busy=false;
             this.rooms=[...this.rooms,...result];
-            if(result.length<pageSize){
+            if(result.length<this.pageSize){
               this.busy=true;
             }
           }
@@ -194,6 +218,22 @@ export default{
       this.sortFlag=!this.sortFlag;
       this.page=1;
       this.getRoomData();
+    },
+    getIn(){
+      axios.get("/getUser/users/").then((response)=>{
+        let res=response.data;
+        if(res.status=="0"){
+          this.nickName=res.result;
+          this.mdInShow=true;
+        }
+        else{
+          this.mdShow=true;
+        }
+      })
+    },
+    closeModal(){
+      this.mdShow=false;
+      this.mdInShow=false;
     }
   }
 }
