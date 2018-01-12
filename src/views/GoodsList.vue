@@ -38,7 +38,7 @@
                     <div class="name">房号：{{item.roomNum}}</div>
                     <span class="price">￥{{item.roomPrice}}</span>
                     <div class="btn-area">
-                      <a href="javascript:;" class="btn btn--m" @click="getIn">入住</a>
+                      <a href="javascript:;" class="btn btn--m" @click="getIn(item.roomNum)">入住</a>
                     </div>
                   </div>
                 </li>
@@ -180,7 +180,7 @@ export default{
         priceDown:priceLevel.priceDown,
         sortFlag:this.sortFlag
       };
-      axios.get("getData/room",{params:params}).then(res=>{
+      axios.get("getData/room/list",{params:params}).then(res=>{
         let result=res.data.room;
         this.waitting=false;
         if(flag){
@@ -219,14 +219,13 @@ export default{
       this.page=1;
       this.getRoomData();
     },
-    getIn(){
-      axios.get("/getUser/users/").then((response)=>{
+    getIn(roomNum){
+      axios.post("/getUser/users/addRoom",{roomNum:roomNum}).then((response)=>{
         let res=response.data;
         if(res.status=="0"){
-          this.nickName=res.result;
           this.mdInShow=true;
         }
-        else{
+        else if(res.status=="10001"){
           this.mdShow=true;
         }
       })

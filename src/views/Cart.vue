@@ -58,42 +58,42 @@
             </ul>
           </div>
           <ul class="cart-item-list">
-            <li>
+            <li v-for="(room,index) in rooms">
               <div class="cart-tab-1">
                 <div class="cart-item-check">
-                  <a href="javascipt:;" class="checkbox-btn item-check-btn">
+                  <a href="javascipt:;" class="checkbox-btn item-check-btn" v-bind:class="{'check':checked[index].checked==true}" @click="checked[index].checked=!checked[index].checked" >
                     <svg class="icon icon-ok">
                       <use xlink:href="#icon-ok"></use>
                     </svg>
                   </a>
                 </div>
                 <div class="cart-item-pic">
-                  <img src="/static/1.jpg">
+                  <img class="imgPic" v-bind:src="'static/'+room.roomNum+'.jpg'">
                 </div>
                 <div class="cart-item-title">
-                  <div class="item-name">XX</div>
+                  <div class="item-name">房号{{room.roomNum}}</div>
                 </div>
               </div>
               <div class="cart-tab-2">
-                <div class="item-price">1000</div>
+                <div class="item-price">{{room.roomPrice}}</div>
               </div>
               <div class="cart-tab-3">
                 <div class="item-quantity">
                   <div class="select-self select-self-open">
                     <div class="select-self-area">
-                      <a class="input-sub">-</a>
-                      <span class="select-ipt">10</span>
-                      <a class="input-add">+</a>
+                      <a class="input-sub" @click="editRoom(room.roomNum,index,room.counts-1)">-</a>
+                      <span class="select-ipt">{{room.counts}}</span>
+                      <a class="input-add" @click="editRoom(room.roomNum,index,room.counts+1)">+</a>
                     </div>
                   </div>
                 </div>
               </div>
               <div class="cart-tab-4">
-                <div class="item-price-total">100</div>
+                <div class="item-price-total">{{room.counts*room.roomPrice}}</div>
               </div>
               <div class="cart-tab-5">
                 <div class="cart-item-opration">
-                  <a href="javascript:;" class="item-edit-btn">
+                  <a href="javascript:;" class="item-edit-btn" @click="delRoom(room.roomNum,index)">
                     <svg class="icon icon-del">
                       <use xlink:href="#icon-del"></use>
                     </svg>
@@ -116,8 +116,8 @@
         <div class="cart-foot-inner">
           <div class="cart-foot-l">
             <div class="item-all-check">
-              <a href="javascipt:;">
-                <span class="checkbox-btn item-check-btn">
+              <a href="javascipt:;" @click="chooseSelect">
+                <span class="checkbox-btn item-check-btn" v-bind:class="{'check':selectAll}">
                   <svg class="icon icon-ok"><use xlink:href="#icon-ok"/></svg>
                 </span>
                 <span>Select all</span>
@@ -126,7 +126,7 @@
           </div>
           <div class="cart-foot-r">
             <div class="item-total">
-              Item total: <span class="total-price">500</span>
+              Item total: <span class="total-price">{{totalPrice}}</span>
             </div>
             <div class="btn-wrap">
               <a class="btn btn--red">Checkout</a>
@@ -189,6 +189,10 @@
   min-width: 30px;
   text-align: center;
 }
+.imgPic{
+  width: 100%;
+  height:100%;
+}
 </style>
 <script>
 import NavHeader from "./../components/NavHeader"
@@ -197,7 +201,10 @@ import Modal from "./../components/Modal"
 export default{
   data(){
     return{
-        mdShow:false
+      mdShow:false,
+      rooms:[],
+      checked:[]
+
     }
   },
   components:{
@@ -206,23 +213,72 @@ export default{
     Modal
 
   },
+  computed:{
+    totalPrice(){
+      var money=0;
+      this.rooms.forEach((item,index)=>{
+        if(this.checked[index].checked==true)
+        money+=item.roomPrice*item.counts;
+      })
+      return money;
+    },
+    selectAll(){
+      var select=true;
+      this.checked.forEach(item=>select=select&item.checked)
+      return select;
+    }
+  },
   mounted(){
-    this.checkLogin();
+    this.roomInit();
   },
   methods:{
-    checkLogin(){
-      axios.get("/getUser/users/checkLogin").then((response)=>{
+    roomInit(){
+      axios.get("/getUser/users/roomCart").then((response)=>{
         let res=response.data;
-        if(res.status!="0"){
-          this.closeModal();
-        }else{
+        if(res.status=="10001"){
+          this.openModal();
+        }else if(res.status=="1"){
           return;
+        }else{
+          this.rooms=res.result;
+          this.checked=this.rooms.map(item=>{return {checked:false}})
         }
       })
     },
-    closeModal(){
+    openModal(){
       this.mdShow=true;
 
+    },
+    closeModal(){
+      this.mdShow=false
+      this.$router.push({path:'/GoodsList'});
+      
+    },
+    delRoom(roomId,index){
+      axios.post("/getUser/users/delRoom",{roomId:roomId}).then((response)=>{
+        let res=response.data;
+        if(res.status=="0"){
+          this.rooms.splice(index,1);
+          this.checked.splice(index,1);
+        }
+      })
+    },
+    editRoom(roomId,index,val){
+      if(val<1){
+        return;
+      }
+      axios.post("/getUser/users/editRoom",{roomId:roomId,roomCount:val}).then((response)=>{
+        let res=response.data;
+        if(res.status=="0"){
+          this.rooms[index].counts=val;
+        }
+      })
+    },
+    chooseSelect(){
+      let flag = !this.selectAll;
+      this.checked.forEach(item=>{
+        item.checked=flag;
+      })
     }
   }
 }

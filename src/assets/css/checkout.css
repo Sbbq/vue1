@@ -433,7 +433,7 @@ html {
 }
 
 .cart-item-list .cart-tab-3 {
-  padding-top: 48px;
+  padding-top: 58px;
 }
 
 .cart-item-list .cart-tab-4 {
@@ -469,7 +469,7 @@ html {
   display: -ms-flexbox;
   display: flex;
   min-height: 76px;
-  padding: 0 20px 0 20px;
+  padding: 0 20px 0 120px;
   -webkit-flex-wrap: wrap;
   -ms-flex-wrap: wrap;
   flex-wrap: wrap;
