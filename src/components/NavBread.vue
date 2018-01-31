@@ -2,8 +2,8 @@
     <section class="bread">
         <div class="bread-wrap">
             <nav class="">
-                <a href="/">
-                    Home
+                <a href="/GoodsList">
+                    Rooms
                 </a>
                 <slot></slot>
             </nav>

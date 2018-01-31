@@ -2,7 +2,6 @@
   <div>
     <nav-header></nav-header>
     <nav-bread>
-      <span>Rooms</span>
     </nav-bread>
     <div class="accessory-result-page accessory-page">
       <div class="container">
@@ -180,7 +179,7 @@ export default{
         priceDown:priceLevel.priceDown,
         sortFlag:this.sortFlag
       };
-      axios.get("getData/room/list",{params:params}).then(res=>{
+      this.$http.get("getData/room/list",{params:params}).then(res=>{
         let result=res.data.room;
         this.waitting=false;
         if(flag){
@@ -220,7 +219,7 @@ export default{
       this.getRoomData();
     },
     getIn(roomNum){
-      axios.post("/getUser/users/addRoom",{roomNum:roomNum}).then((response)=>{
+      this.$http.post("/getUser/users/addRoom",{roomNum:roomNum}).then((response)=>{
         let res=response.data;
         if(res.status=="0"){
           this.mdInShow=true;

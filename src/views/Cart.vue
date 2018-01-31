@@ -1,7 +1,7 @@
 <template>
   <div>
     <nav-bread>
-      <span>GetIn</span>
+      <span>CheckOut</span>
     </nav-bread>
     <svg style="position: absolute; width: 0; height: 0; overflow: hidden;" version="1.1"
     xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
@@ -233,7 +233,7 @@ export default{
   },
   methods:{
     roomInit(){
-      axios.get("/getUser/users/roomCart").then((response)=>{
+      this.$http.get("/getUser/users/roomCart").then((response)=>{
         let res=response.data;
         if(res.status=="10001"){
           this.openModal();
@@ -255,7 +255,7 @@ export default{
       
     },
     delRoom(roomId,index){
-      axios.post("/getUser/users/delRoom",{roomId:roomId}).then((response)=>{
+      this.$http.post("/getUser/users/delRoom",{roomId:roomId}).then((response)=>{
         let res=response.data;
         if(res.status=="0"){
           this.rooms.splice(index,1);
@@ -267,7 +267,7 @@ export default{
       if(val<1){
         return;
       }
-      axios.post("/getUser/users/editRoom",{roomId:roomId,roomCount:val}).then((response)=>{
+      this.$http.post("/getUser/users/editRoom",{roomId:roomId,roomCount:val}).then((response)=>{
         let res=response.data;
         if(res.status=="0"){
           this.rooms[index].counts=val;
