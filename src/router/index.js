@@ -7,7 +7,10 @@ import good from '@/views/good'
 Vue.use(Router)
 
 export default new Router({
+	base:'/',
+
 	routes: [
+	{path:'/',redirect:'/GoodsList'},
 	{
 		path: '/GoodsList',
 		name: 'GoodsList',

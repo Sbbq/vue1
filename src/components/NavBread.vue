@@ -2,9 +2,9 @@
     <section class="bread">
         <div class="bread-wrap">
             <nav class="">
-                <a href="/GoodsList">
+                <router-link class="sty" to="/GoodsList">
                     Rooms
-                </a>
+                </router-link>
                 <slot></slot>
             </nav>
         </div>
@@ -21,11 +21,11 @@
       font-size: 14px;
       color: #a1a1a1;
   }
-  .bread-wrap a{
+  .bread-wrap .sty{
     position: relative;
       margin-right: 20px;
   }
-  .bread-wrap a:after{
+  .bread-wrap .sty:after{
       position: absolute;
       top: 0px;
       content:'/';
